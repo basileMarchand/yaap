@@ -23,7 +23,7 @@ tests:
 	(cd tests ; make )
 
 
-.PHONY: all tests
+.PHONY: all examples tests
 
 clean:
 	(cd examples ; make clean)
