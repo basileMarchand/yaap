@@ -1,0 +1,30 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build example",
+            "command": "make",
+            "type": "shell",
+            "group": "build",
+            "args": [
+                "-j2"
+            ]
+        },
+        {
+            "label": "Build test",
+            "command": "make",
+            "type": "shell",
+            "group": "build",
+            "args": [
+                "-j2",
+                "tests"
+            ]
+        },
+        {
+            "label": "Run test",
+            "command": "./tests/yaap_tests",
+            "type": "shell",
+            "group": "build"
+        }
+    ]
+}
