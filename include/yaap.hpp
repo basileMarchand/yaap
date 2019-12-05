@@ -1,3 +1,24 @@
+//==============================================================================
+// Copyright (C) 2019 Marchand Basile
+// 
+// This file is part of yaap.
+// 
+// yaap is free software: you can redistribute it and/or modify
+// it under the terms of the GNU Lesser General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// any later version.
+// 
+// yaap is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU Lesser General Public License for more details.
+// 
+// You should have received a copy of the GNU Lesser General Public License
+// along with yaap.  If not, see <http://www.gnu.org/licenses/>
+//==============================================================================
+
+
+
 #ifndef _YAAP_H__
 #define _YAAP_H__
 
@@ -17,6 +38,23 @@ namespace yaap{
       }
       return ret;
     }
+
+    void tokenize(const std::string& str, std::vector<std::string>& tokens, const std::string& delimiters = ",")
+    {
+      // Skip delimiters at beginning.
+      std::string::size_type lastPos = str.find_first_not_of(delimiters, 0);
+      // Find first non-delimiter.
+      std::string::size_type pos = str.find_first_of(delimiters, lastPos);
+      while (std::string::npos != pos || std::string::npos != lastPos) {
+	// Found a token, add it to the vector.
+	tokens.push_back(str.substr(lastPos, pos - lastPos));
+	// Skip delimiters.
+	lastPos = str.find_first_not_of(delimiters, pos);
+	// Find next non-delimiter.
+	pos = str.find_first_of(delimiters, lastPos);
+      }
+    }
+
 
     template<typename T>
     struct STRANS{ 
@@ -48,6 +86,20 @@ namespace yaap{
 	return v;
       }
     };
+
+    template<typename T>
+    struct STRANS<std::vector<T> >{ 
+      static std::vector<T> convert(std::string x){
+	std::vector<T> ret;
+	std::vector<std::string> tokens;
+	yaap::strutil::tokenize(x, tokens, ",");
+	for( auto t: tokens){
+	  ret.push_back( yaap::strutil::STRANS<T>::convert( t ) );
+	}
+	return ret;
+      }
+    };
+
     template<> 
     struct STRANS<std::string>{ 
       static std::string convert(std::string x){ return x;}
@@ -119,6 +171,7 @@ namespace yaap{
   template<> struct NEED<double>{ static bool eval(){return true;} };
   template<> struct NEED<int>{ static bool eval(){return true;} };
   template<> struct NEED<bool>{ static bool eval(){return false;} };
+  template<typename T> struct NEED<std::vector<T> >{ static bool eval(){return true;} };
   
   template<typename T>
   class ARGUMENT: public ARG{
