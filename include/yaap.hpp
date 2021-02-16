@@ -87,6 +87,7 @@ namespace yaap{
       }
     };
 
+
     template<typename T>
     struct STRANS<std::vector<T> >{ 
       static std::vector<T> convert(std::string x){
@@ -126,13 +127,13 @@ namespace yaap{
     };
     
     void info(){
-      std::cout << this->_short_name <<  ", " << this->_name << std::endl ;
+      std::cout << this->_short_name <<  ", " << this->_name << ": " << this->_help <<  std::endl ;
     }
     
     bool isOption(){
       bool ret = false;
       if( this->option == ARG::OPTIONAL ){
-	ret = true;
+	      ret = true;
       }
       return ret;
     }
@@ -163,6 +164,7 @@ namespace yaap{
     std::string _short_name;
     std::string _name;
     std::string type;
+    std::string _help; 
   };
   
   
@@ -176,11 +178,12 @@ namespace yaap{
   template<typename T>
   class ARGUMENT: public ARG{
   public:
-    ARGUMENT(std::string short_name, std::string long_name, ARG::arg_t option){
+    ARGUMENT(std::string short_name, std::string long_name, ARG::arg_t option, const std::string& help){
       this->_short_name = short_name;
       this->_name = long_name;
       this->option = option;
       this->_need_val = NEED<T>::eval();
+      this->_help = help;
     }
     
     void setValue(std::string x){
@@ -237,7 +240,7 @@ namespace yaap{
     
     static ArgumentParser* Instance(){
       if( _instance == nullptr){
-	_instance = new ArgumentParser;
+	      _instance = new ArgumentParser;
       }
       return _instance;
     }
@@ -264,21 +267,21 @@ namespace yaap{
 
 
     template<typename T>
-    void addArg(std::string short_name, std::string long_name, ARG::arg_t option){
-      ARGUMENT<T>* arg = new ARGUMENT<T>(short_name, long_name, option);
+    void addArg(std::string short_name, std::string long_name, ARG::arg_t option, const std::string& help){
+      ARGUMENT<T>* arg = new ARGUMENT<T>(short_name, long_name, option, help);
       this->args.push_back(arg);
     }
 
     template<typename T>
-    void addArg(std::string short_name, std::string long_name, ARG::arg_t option, T def_value){
-      ARGUMENT<T>* arg = new ARGUMENT<T>(short_name, long_name, option);
+    void addArg(std::string short_name, std::string long_name, ARG::arg_t option, T def_value, const std::string& help){
+      ARGUMENT<T>* arg = new ARGUMENT<T>(short_name, long_name, option, help);
       arg->setTypedValue( def_value );
       this->args.push_back(arg);
     }
 
     template<typename T>
-    void addInput(std::string name, ARG::arg_t status){
-      ARG* inp = new ARGUMENT<T>( name, name, status );
+    void addInput(std::string name, ARG::arg_t status, const std::string& help=""){
+      ARG* inp = new ARGUMENT<T>( name, name, status, help );
       this->inputs.push_back( inp );
     }
     
@@ -353,13 +356,22 @@ namespace yaap{
     void verify(){
       std::vector<ARG*>::iterator it;
       for( it=this->args.begin(); it != this->args.end(); ++it){
-	if( (*it)->hasValue() || (*it)->isOption() ){
-	  continue;
-	}
-	else{
-	  this->usage();
-	  exit(1);
-	}
+        if( (*it)->hasValue() || (*it)->isOption() ){
+          continue;
+        }
+        else{
+          this->usage();
+          exit(1);
+        }
+      }
+      for( it=this->inputs.begin(); it != this->inputs.end(); ++it){
+        if( (*it)->hasValue() || (*it)->isOption() ){
+          continue;
+        }
+        else{
+          this->usage();
+          exit(1);
+        }
       }
     }
     
@@ -367,7 +379,7 @@ namespace yaap{
       std::cout << "usage: " << std::endl;
       std::vector<ARG*>::iterator it;
       for( it=args.begin(); it!=args.end(); ++it){
-	(*it)->info();
+	      (*it)->info();
       }
     }
     
