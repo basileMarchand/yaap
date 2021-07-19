@@ -178,7 +178,7 @@ namespace yaap{
   template<typename T>
   class ARGUMENT: public ARG{
   public:
-    ARGUMENT(std::string short_name, std::string long_name, ARG::arg_t option, const std::string& help){
+    ARGUMENT(const std::string& short_name, const std::string& long_name, ARG::arg_t option, const std::string& help){
       this->_short_name = short_name;
       this->_name = long_name;
       this->option = option;
@@ -267,20 +267,20 @@ namespace yaap{
 
 
     template<typename T>
-    void addArg(std::string short_name, std::string long_name, ARG::arg_t option, const std::string& help){
+    void addArg(const std::string& short_name, const std::string& long_name, ARG::arg_t option, const std::string& help){
       ARGUMENT<T>* arg = new ARGUMENT<T>(short_name, long_name, option, help);
       this->args.push_back(arg);
     }
 
     template<typename T>
-    void addArg(std::string short_name, std::string long_name, ARG::arg_t option, T def_value, const std::string& help){
+    void addArg(const std::string& short_name, const std::string& long_name, ARG::arg_t option, T def_value, const std::string& help){
       ARGUMENT<T>* arg = new ARGUMENT<T>(short_name, long_name, option, help);
       arg->setTypedValue( def_value );
       this->args.push_back(arg);
     }
 
     template<typename T>
-    void addInput(std::string name, ARG::arg_t status, const std::string& help=""){
+    void addInput(const std::string& name, ARG::arg_t status, const std::string& help=""){
       ARG* inp = new ARGUMENT<T>( name, name, status, help );
       this->inputs.push_back( inp );
     }
